@@ -1,6 +1,6 @@
 ---
 name: remote-config-local
-description: Set up this remote-config-example repo on the local machine (Node version, install, .env, migrations, tests, dev server) and explain how it works (the { key, value } table, how the type is detected from the string, flag specs in code, the flag CLI, adding flags and migrations). Use when the user asks to install, set up, run, configure or understand this repo, add a flag, add a migration, or when something in the local setup fails.
+description: Teach remote config (what it is, why it helps, how this repo implements it, what the computer needs) and set up this remote-config-example repo on the local machine (Node version, install, .env, migrations, tests, dev server) and explain how it works (the { key, value } table, how the type is detected from the string, flag specs in code, the flag CLI, adding flags and migrations). Use when the user wants to learn what remote config or feature flags are, or asks to install, set up, run, configure or understand this repo, add a flag, add a migration, or when something in the local setup fails.
 ---
 
 # remote-config-example: local setup and how it works
@@ -9,7 +9,17 @@ Answer in the user's language. Assume the user may not be a programmer: run ever
 
 If the repo is not on the machine yet, clone it first (`git clone https://github.com/efrain26/remote-config-example.git`) and work inside that folder.
 
-## 1. Set up
+## 0. Teach remote config (when the user wants to learn)
+
+Go one idea at a time, check they follow, and show each idea working in the running project (set it up first if needed). Plain words, no jargon unless they ask.
+
+1. **What it is**: settings your app reads while it runs, stored outside the code. Changing one changes the app without publishing a new version.
+2. **Why it helps**: turn a new feature on or off, fix a text or a number, or switch off something broken in seconds. Show it: `npm run flag -- set new_checkout true`, reload the page.
+3. **How it is built here**: one table, each row a `{ key, value }`. The value is always text; the app recognizes yes/no, numbers and text (section 2). Show it: `npm run flag -- list`.
+4. **Safety net**: every flag has a type and a default in `src/config.ts`. Show it: `npm run flag -- set max_items twenty` is refused.
+5. **What you need**: Node.js 22.18+ on the computer, and a database. Here it is PGlite (Postgres in a folder); in a real app the same SQL migrations run in Supabase or any Postgres.
+6. **Next steps**, only if they ask: percentages of users, segments, change history; that is when a hosted feature flag service starts to make sense.
+
 
 Run from the repo root, in order. Stop at the first failure and use "Troubleshooting".
 
