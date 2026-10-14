@@ -70,7 +70,11 @@ test("migrations, seed and type changes against Postgres", async () => {
   assert.equal(await setFlag(db, "max_items", "10"), "integer");
   assert.equal((await readStored(db)).get("max_items"), "10");
   await assert.rejects(setFlag(db, "max_items", "ten"), TypeChangeError);
-  assert.equal(await setFlag(db, "max_items", "ten", true), "string");
+  assert.equal(await setFlag(db, "max_items", "ten", { force: true }), "string");
+
+  // With the spec: a decimal flag takes a whole number, an integer flag refuses a decimal.
+  assert.equal(await setFlag(db, "discount", "1", { spec: FLAGS.discount }), "integer");
+  await assert.rejects(setFlag(db, "new_checkout", "yes", { spec: FLAGS.new_checkout }), TypeChangeError);
 
   await assert.rejects(db.query("insert into flags (key, value) values ('Bad-Key', '1')"));
   await db.close();

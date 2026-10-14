@@ -71,7 +71,7 @@ export const FLAGS = {
 };
 ```
 
-If someone saves `max_items = twenty`, the app keeps `3` and logs a warning instead of breaking. The CLI also refuses to change a flag's type unless you pass `--force`.
+If someone saves `max_items = twenty`, the app keeps `3` and logs a warning instead of breaking. The CLI also refuses a value that does not fit the declared type (`max_items = 2.5`) unless you pass `--force`.
 
 ## Endpoints
 

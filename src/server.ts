@@ -79,7 +79,8 @@ const server = createServer(async (req, res) => {
         if (typeof body.value !== "string") {
           return send(res, 400, { error: 'value must be a string, e.g. {"value": "true"}' });
         }
-        const type = await setFlag(db, key, body.value, body.force === true);
+        const spec = Object.hasOwn(FLAGS, key) ? FLAGS[key as keyof typeof FLAGS] : undefined;
+        const type = await setFlag(db, key, body.value, { spec, force: body.force === true });
         return send(res, 200, { key, value: body.value, type });
       }
       if (req.method === "DELETE") {

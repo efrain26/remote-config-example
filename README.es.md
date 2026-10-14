@@ -71,7 +71,7 @@ export const FLAGS = {
 };
 ```
 
-Si alguien guarda `max_items = veinte`, la app se queda con `3` y deja un aviso en el log en vez de romperse. El CLI además no deja cambiar el tipo de una bandera sin `--force`.
+Si alguien guarda `max_items = veinte`, la app se queda con `3` y deja un aviso en el log en vez de romperse. El CLI además rechaza un valor que no cuadra con el tipo declarado (`max_items = 2.5`) si no pasas `--force`.
 
 ## Rutas
 

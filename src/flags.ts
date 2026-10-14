@@ -111,13 +111,22 @@ export async function listFlags(db: PGlite): Promise<(FlagRow & { type: FlagType
 
 export class TypeChangeError extends Error {}
 
-// Changing a flag's type is almost always a mistake ("20" -> "twenty"); it needs `force`.
-export async function setFlag(db: PGlite, key: string, value: string, force = false): Promise<FlagType> {
+// Changing a flag's type is almost always a mistake ("20" -> "twenty"), so it needs `force`.
+// The expected type is the spec's (from src/config.ts); without a spec, the current row's.
+export async function setFlag(
+  db: PGlite,
+  key: string,
+  value: string,
+  { spec, force = false }: { spec?: FlagSpec; force?: boolean } = {},
+): Promise<FlagType> {
   const type = parseValue(value).type;
-  const current = await db.query<{ value: string }>("select value from flags where key = $1", [key]);
-  const previous = current.rows[0] ? parseValue(current.rows[0].value).type : null;
-  if (previous && previous !== type && !force) {
-    throw new TypeChangeError(`"${key}" is ${previous}; the new value is ${type}. Use --force to change the type.`);
+  let expected = spec?.type;
+  if (!expected) {
+    const current = await db.query<{ value: string }>("select value from flags where key = $1", [key]);
+    expected = current.rows[0] ? parseValue(current.rows[0].value).type : undefined;
+  }
+  if (expected && !fits(expected, type) && !force) {
+    throw new TypeChangeError(`"${key}" is ${expected}; the new value is ${type}. Use --force to change the type.`);
   }
   await db.query(
     `insert into flags (key, value) values ($1, $2)

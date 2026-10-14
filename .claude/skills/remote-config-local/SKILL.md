@@ -37,7 +37,7 @@ Run from the repo root, in order. Stop at the first failure and use "Troubleshoo
 - **Specs in code** (`src/config.ts`): `flag("integer", 3)` says what type the app expects and the default. `resolve()` joins rows with specs: a row of another type is ignored (default + one warning). A decimal flag accepts whole numbers; an integer flag rejects decimals. Rows without a spec are not sent to clients.
 - **Cache**: rows are cached in memory and cleared on every write through the API. A failed read throws; it is never cached.
 - **Server vs client**: `GET /` renders with the flags on the server (what is off never reaches the browser). The box at the bottom is filled in the browser from `/api/config`, starting from defaults.
-- **Writes**: only through `PUT`/`DELETE /api/flags/:key` with `Authorization: Bearer $ADMIN_TOKEN`. `npm run flag` wraps them. Changing a flag's type returns 409 unless `--force`.
+- **Writes**: only through `PUT`/`DELETE /api/flags/:key` with `Authorization: Bearer $ADMIN_TOKEN`. `npm run flag` wraps them. A value that does not fit the type declared in `src/config.ts` (or, for a flag not declared there, the type of its current row) returns 409 unless `--force`.
 
 ## 3. Common tasks
 
