@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Remote config example</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; color: #111827; }
+    .banner { background: {{accent}}; color: #fff; padding: .5rem 1rem; border-radius: {{radius}}; }
+    button { background: #e5e7eb; border: 0; padding: .6rem 1rem; border-radius: {{radius}}; font: inherit; }
+    button.new { background: {{accent}}; color: #fff; }
+    pre { background: #f3f4f6; padding: 1rem; overflow-x: auto; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Store</h1>
+  {{banner}}
+  <ul>{{items}}</ul>
+  {{checkout}}
+
+  <h2>What a client receives</h2>
+  <p>This box is filled in the browser: it starts with the defaults and swaps them for <code>/api/config</code>.</p>
+  <pre id="client">loading…</pre>
+
+  <script type="module">
+    // On the client, defaults first: the app must work before (or without) the download.
+    const defaults = { new_checkout: false, max_items: 3 };
+    const box = document.getElementById("client");
+    box.textContent = JSON.stringify({ source: "defaults", ...defaults }, null, 2);
+    try {
+      const response = await fetch("/api/config");
+      if (!response.ok) throw new Error(response.status);
+      const config = await response.json();
+      const types = Object.fromEntries(Object.entries(config).map(([k, v]) => [k, typeof v]));
+      box.textContent = JSON.stringify({ source: "/api/config", config, types }, null, 2);
+    } catch (error) {
+      box.textContent += `\n\n/api/config failed (${error.message}): still on defaults`;
+    }
+  </script>
+</body>
+</html>
